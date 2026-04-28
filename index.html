@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tanışma Sistemi</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+
+    <h1>Tanışma Sistemi</h1>
+
+    <h3>Ne göndermek istiyorsun?</h3>
+
+    <div class="mode-buttons">
+      <button onclick="setMode('photo')">📸 Foto + Mesaj</button>
+      <button onclick="setMode('video')">🎥 Video Mesaj</button>
+    </div>
+
+    <p id="modeText">Mod seçilmedi</p>
+
+    <textarea
+      id="message"
+      placeholder="Mesajını yaz..."
+    ></textarea>
+
+    <video
+      id="video"
+      autoplay
+      playsinline
+      muted
+    ></video>
+
+    <div class="buttons">
+      <button onclick="startCamera()">Kamerayı Aç</button>
+      <button onclick="takePhoto()">Foto Çek</button>
+      <button onclick="startRecording()">Video Başlat</button>
+      <button onclick="stopRecording()">Video Durdur</button>
+      <button onclick="resetMedia()">Sil / Yeniden Çek</button>
+      <button onclick="sendData()">Gönder</button>
+    </div>
+
+    <canvas id="canvas" style="display:none;"></canvas>
+
+    <img
+      id="preview"
+      style="display:none;"
+    />
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
