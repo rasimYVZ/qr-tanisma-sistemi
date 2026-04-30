@@ -24,6 +24,11 @@ video, img {
   background: black;
 }
 
+/* 🔥 BAŞLANGIÇTA TÜM ALT BUTONLAR GİZLİ */
+.buttons button {
+  display: none;
+}
+
 button {
   padding: 10px;
   margin: 5px;
