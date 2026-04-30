@@ -20,6 +20,11 @@ const UPLOAD_PRESET = "qr_upload";
 /* WEB3FORMS */
 const WEB3FORMS_ACCESS_KEY = "3966e0f9-74d2-44ab-818f-3641870a2c0e";
 
+/* SAYFA AÇILDIĞINDA */
+window.onload = () => {
+  updateButtons();
+};
+
 /* MODE */
 function setMode(selected) {
   mode = selected;
@@ -27,6 +32,8 @@ function setMode(selected) {
   document.getElementById("modeText").innerText =
     "Seçilen mod: " +
     (mode === "photo" ? "Foto + Mesaj" : "Video Mesaj");
+
+  video.style.display = "block";
 
   updateButtons();
 }
@@ -63,27 +70,32 @@ function showBtn(fnName) {
 
 /* CAMERA */
 async function startCamera() {
-  stream = await navigator.mediaDevices.getUserMedia({
-    video: { facingMode: "user" },
-    audio: true
-  });
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "user" },
+      audio: true
+    });
 
-  video.srcObject = stream;
+    video.srcObject = stream;
 
-  mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder = new MediaRecorder(stream);
 
-  mediaRecorder.ondataavailable = e => {
-    if (e.data.size > 0) recordedChunks.push(e.data);
-  };
+    mediaRecorder.ondataavailable = e => {
+      if (e.data.size > 0) recordedChunks.push(e.data);
+    };
 
-  mediaRecorder.onstop = () => {
-    lastVideoBlob = new Blob(recordedChunks, { type: "video/webm" });
-    recordedChunks = [];
+    mediaRecorder.onstop = () => {
+      lastVideoBlob = new Blob(recordedChunks, { type: "video/webm" });
+      recordedChunks = [];
 
-    clearInterval(recordInterval);
-    alert("Video hazır (" + seconds + " sn)");
-    seconds = 0;
-  };
+      clearInterval(recordInterval);
+      alert("Video hazır (" + seconds + " sn)");
+      seconds = 0;
+    };
+
+  } catch (e) {
+    alert("Kamera açılamadı");
+  }
 }
 
 /* PHOTO */
@@ -103,7 +115,7 @@ function takePhoto() {
 
 /* VIDEO START */
 function startRecording() {
-  if (!mediaRecorder) return alert("Önce kamera");
+  if (!mediaRecorder) return alert("Önce kamerayı aç");
 
   recordedChunks = [];
   mediaRecorder.start();
@@ -118,6 +130,7 @@ function startRecording() {
 
 /* VIDEO STOP */
 function stopRecording() {
+  if (!mediaRecorder) return;
   mediaRecorder.stop();
 }
 
@@ -166,7 +179,7 @@ async function sendMail(message, fileUrl, modeText) {
   let formData = new FormData();
 
   formData.append("access_key", WEB3FORMS_ACCESS_KEY);
-  formData.append("email", "seninmailin@gmail.com");
+  formData.append("email", "seninmailin@gmail.com"); // ← BURAYI DEĞİŞTİR
   formData.append("subject", "Yeni Tanışma Mesajı");
 
   formData.append(
@@ -185,17 +198,21 @@ Saat: ${new Date().toLocaleString()}`
 
 /* SEND */
 async function sendData() {
-  let msg = document.getElementById("message").value;
+  let msg = document.getElementById("message").value.trim();
+
+  if (!msg) return alert("Mesaj boş olamaz");
 
   let blob, type, text;
 
   if (mode === "photo") {
+    if (!lastImage) return alert("Foto çek");
     blob = dataURLtoBlob(lastImage);
     type = "image";
     text = "Foto + Mesaj";
   }
 
   if (mode === "video") {
+    if (!lastVideoBlob) return alert("Video çek");
     blob = lastVideoBlob;
     type = "video";
     text = "Video Mesaj";
